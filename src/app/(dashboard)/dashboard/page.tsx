@@ -7,10 +7,8 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">
-            Welcome back! Here's what's happening with your Lab OS.
-          </p>
+          <h1 className="text-3xl font-bold">Welcome to your dashboard</h1>
+          <p className="text-muted-foreground">Here&apos;s what&apos;s happening with your account today.</p>
         </div>
         <Button>
           <Plus className="mr-2 h-4 w-4" />

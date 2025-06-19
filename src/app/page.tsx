@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Brain, Calendar, FileText, Users, DollarSign, Settings } from 'lucide-react';

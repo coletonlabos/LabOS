@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { Home, Calendar, FileText, Users, DollarSign, Settings } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const navItems = [
