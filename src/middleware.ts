@@ -1,20 +1,31 @@
-import { authMiddleware } from '@clerk/nextjs';
- 
-// This example protects all routes including api/trpc routes
-// Please edit this to allow other routes to be public as needed.
-// See https://clerk.com/docs/references/nextjs/auth-middleware for more information about configuring your middleware
-export default authMiddleware({
-  publicRoutes: ['/sign-in', '/sign-up', '/api/webhook'],
-  afterAuth(auth, req) {
-    // Handle users who aren't authenticated
-    if (!auth.userId && !auth.isPublicRoute) {
-      const signInUrl = new URL('/sign-in', req.url);
-      signInUrl.searchParams.set('redirect_url', req.url);
-      return Response.redirect(signInUrl);
-    }
-  },
-});
- 
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+
+export async function middleware(req: NextRequest) {
+  const res = NextResponse.next()
+  const supabase = createMiddlewareClient({ req, res })
+
+  const { data: { session } } = await supabase.auth.getSession()
+
+  // If user is not signed in and the current path is not /sign-in, redirect to /sign-in
+  if (!session && !req.nextUrl.pathname.startsWith('/sign-in')) {
+    const redirectUrl = req.nextUrl.clone()
+    redirectUrl.pathname = '/sign-in'
+    redirectUrl.searchParams.set('redirectedFrom', req.nextUrl.pathname)
+    return NextResponse.redirect(redirectUrl)
+  }
+
+  // If user is signed in and the current path is /sign-in, redirect to /dashboard
+  if (session && req.nextUrl.pathname === '/sign-in') {
+    return NextResponse.redirect(new URL('/dashboard', req.url))
+  }
+
+  return res
+}
+
 export const config = {
-  matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
-};
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico).*)',
+  ],
+}

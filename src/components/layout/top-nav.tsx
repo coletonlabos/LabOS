@@ -1,9 +1,35 @@
-import { Button } from '@/components/ui/button';
-import { UserButton } from '@clerk/nextjs';
-import { Search } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+'use client';
 
-export function TopNav() {
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Search, Bell, User } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { User as UserType } from '@supabase/supabase-js';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { createClient } from '@/lib/supabase/client';
+
+interface TopNavProps {
+  user: UserType | null;
+}
+
+export function TopNav({ user }: TopNavProps) {
+  const router = useRouter();
+  const supabase = createClient();
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push('/sign-in');
+    router.refresh();
+  };
+
   return (
     <header className="border-b">
       <div className="flex items-center justify-between h-16 px-4">
@@ -19,36 +45,43 @@ export function TopNav() {
           <Button variant="ghost" size="icon">
             <Bell className="h-5 w-5" />
           </Button>
-          <UserButton
-            afterSignOutUrl="/sign-in"
-            appearance={{
-              elements: {
-                avatarBox: 'h-9 w-9',
-              },
-            }}
-          />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={user?.user_metadata?.avatar_url} alt={user?.email} />
+                  <AvatarFallback>
+                    <User className="h-4 w-4" />
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">
+                    {user?.user_metadata?.full_name || user?.email?.split('@')[0]}
+                  </p>
+                  <p className="text-xs leading-none text-muted-foreground">
+                    {user?.email}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => router.push('/profile')}>
+                Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/settings')}>
+                Settings
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
+                Sign out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>
-  );
-}
-
-function Bell(props: React.ComponentProps<'svg'>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
-      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
-    </svg>
   );
 }

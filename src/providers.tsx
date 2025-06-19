@@ -1,19 +1,25 @@
 'use client';
 
-import { ClerkProvider } from '@clerk/nextjs';
-import { dark } from '@clerk/themes';
-import { useTheme } from 'next-themes';
+import { createClient } from '@/lib/supabase/client';
+import { SessionContextProvider } from '@supabase/auth-helpers-react';
+import { ThemeProvider } from "next-themes";
+import { ToastProvider } from '@/components/ui/use-toast';
+
+const supabase = createClient();
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  const { theme } = useTheme();
-
   return (
-    <ClerkProvider
-      appearance={{
-        baseTheme: theme === 'dark' ? dark : undefined,
-      }}
-    >
-      {children}
-    </ClerkProvider>
+    <SessionContextProvider supabaseClient={supabase}>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+      >
+        <ToastProvider>
+          {children}
+        </ToastProvider>
+      </ThemeProvider>
+    </SessionContextProvider>
   );
 }
