@@ -18,7 +18,7 @@ export default function DashboardPage() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="p-6">
-          <h3 className="text-sm font-medium text-muted-foreground">Today's Tasks</h3>
+          <h3 className="text-sm font-medium text-muted-foreground">Today&apos;s Tasks</h3>
           <p className="text-2xl font-bold">12</p>
         </Card>
         <Card className="p-6">

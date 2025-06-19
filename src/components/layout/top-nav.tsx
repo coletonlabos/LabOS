@@ -3,15 +3,7 @@ import { UserButton } from '@clerk/nextjs';
 import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
-type TopNavProps = {
-  user: {
-    firstName?: string | null;
-    lastName?: string | null;
-    imageUrl: string;
-  };
-};
-
-export function TopNav({ user }: TopNavProps) {
+export function TopNav() {
   return (
     <header className="border-b">
       <div className="flex items-center justify-between h-16 px-4">
